@@ -62,9 +62,67 @@ export interface VideoUploadProgress {
   percent: number;
 }
 
+export interface TimeRange {
+  start_percent: number;
+  end_percent: number;
+}
+
+export interface TextPromptData {
+  prompt: string;
+}
+
+export interface CategoryData {
+  category: string;
+}
+
+export interface TimeRangeData {
+  ranges: TimeRange[];
+}
+
+export interface SceneData {
+  start_time: number;
+  end_time: number;
+  duration: number;
+  confidence_score: number;
+  matched_text?: string;
+  matched_category?: string;
+}
+
 export interface Summary {
   id: string;
   video_id: string;
-  content: string;
+  user_id: string;
+  title: string;
+  request_type: 'text-prompt' | 'category' | 'time-range';
+  request_data: TextPromptData | CategoryData | TimeRangeData;
+  selected_scenes?: SceneData[];
+  summary_duration_seconds?: number;
+  output_format: string;
+  storage_path?: string;
+  file_size?: number;
+  status: 'processing' | 'completed' | 'failed';
+  progress_percent: number;
+  error_message?: string;
   created_at: string;
+  completed_at?: string;
+  updated_at: string;
+}
+
+export interface SummaryRequest {
+  title: string;
+  type: 'text-prompt' | 'category' | 'time-range';
+  data: TextPromptData | CategoryData | TimeRangeData;
+}
+
+export interface SummaryProgressResponse {
+  summary_id: string;
+  status: string;
+  progress_percent: number;
+  error_message?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
 }

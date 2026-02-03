@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import VideoDetail from './pages/VideoDetail';
+import SummaryDetail from './pages/SummaryDetail';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 
@@ -29,6 +30,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <VideoDetail />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/summaries/:id" 
+              element={
+                <ProtectedRoute>
+                  <SummaryDetail />
                 </ProtectedRoute>
               } 
             />
