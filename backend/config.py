@@ -11,7 +11,16 @@ class Settings(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_KEY: str
     SUPABASE_STORAGE_BUCKET: str = "videos"
-    
+
+    # Video Settings
+    SUPPORTED_VIDEO_FORMATS: list = ["mp4", "mov", "wmv", "avi", "mkv", "webm"]
+    MAX_VIDEO_SIZE_MB: int = 4000
+    VIDEO_STORAGE_PATH: str = "videos"
+
+    @property
+    def MAX_VIDEO_SIZE(self) -> int:
+        return self.MAX_VIDEO_SIZE_MB * 1024 * 1024
+
     # Redis Settings
     REDIS_URL: str = "redis://localhost:6379"
     

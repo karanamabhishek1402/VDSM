@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios';
-import { Token, User, UserCreate } from '../types';
+import { Token, User, UserCreate, Video } from '../types';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_BASE_URL || `${API_BASE}`;
 
 const api = axios.create({
   baseURL: API_URL,
@@ -61,6 +61,59 @@ export const authService = {
   logout(): void {
     localStorage.removeItem('vdsm_token');
     localStorage.removeItem('vdsm_user');
+  }
+};
+
+export const videoService = {
+  async uploadVideo(
+    file: File,
+    title: string,
+    description: string,
+    onProgress: (progress: number) => void
+  ): Promise<Video> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', title);
+    if (description) {
+      formData.append('description', description);
+    }
+
+    const response = await api.post<Video>('/videos/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted);
+        }
+      },
+    });
+    return response.data;
+  },
+
+  async getVideos(skip: number = 0, limit: number = 20): Promise<Video[]> {
+    const response = await api.get<Video[]>('/videos/', {
+      params: { skip, limit },
+    });
+    return response.data;
+  },
+
+  async getVideoById(videoId: string): Promise<Video> {
+    const response = await api.get<Video>(`/videos/${videoId}`);
+    return response.data;
+  },
+
+  async deleteVideo(videoId: string): Promise<void> {
+    await api.delete(`/videos/${videoId}`);
+  },
+
+  async getDownloadUrl(videoId: string): Promise<string> {
+    return `${API_BASE}/videos/${videoId}/download`;
+  },
+
+  async downloadVideo(videoId: string): Promise<void> {
+    window.open(`${API_BASE}/videos/${videoId}/download`, '_blank');
   }
 };
 
