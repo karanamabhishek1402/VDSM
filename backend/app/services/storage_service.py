@@ -37,17 +37,58 @@ class StorageService:
             print(f"Error uploading chunk: {e}")
             return False
 
-    def upload_file(self, bucket: str, file_path: str, file_bytes: bytes, content_type: str = "video/mp4") -> str:
+    def upload_file(self, bucket: str, source_path_or_bytes, destination_path: str, content_type: str = "video/mp4") -> str:
+        """
+        Upload file to storage
+        
+        Args:
+            bucket: Bucket name
+            source_path_or_bytes: Either a file path (str) or bytes
+            destination_path: Destination path in storage
+            content_type: Content type
+            
+        Returns:
+            Destination path or None on error
+        """
         try:
+            # Handle both file path and bytes
+            if isinstance(source_path_or_bytes, str):
+                # It's a file path, read the file
+                with open(source_path_or_bytes, 'rb') as f:
+                    file_bytes = f.read()
+            else:
+                file_bytes = source_path_or_bytes
+            
             self.supabase.storage.from_(bucket).upload(
-                path=file_path,
+                path=destination_path,
                 file=file_bytes,
                 file_options={"content-type": content_type, "upsert": "true"}
             )
-            return file_path
+            return destination_path
         except Exception as e:
             print(f"Error uploading file: {e}")
             return None
+    
+    def download_file(self, bucket: str, file_path: str, local_path: str) -> bool:
+        """
+        Download file from storage to local path
+        
+        Args:
+            bucket: Bucket name
+            file_path: Path in storage
+            local_path: Local file path to save to
+            
+        Returns:
+            True if successful
+        """
+        try:
+            file_bytes = self.supabase.storage.from_(bucket).download(file_path)
+            with open(local_path, 'wb') as f:
+                f.write(file_bytes)
+            return True
+        except Exception as e:
+            print(f"Error downloading file: {e}")
+            return False
 
     def delete_file(self, bucket: str, file_path: str) -> bool:
         try:

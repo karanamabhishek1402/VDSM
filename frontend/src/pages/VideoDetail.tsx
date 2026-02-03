@@ -4,6 +4,8 @@ import { videoService } from '../services/api';
 import { Video } from '../types';
 import VideoPlayer from '../components/VideoPlayer';
 import Loading from '../components/Loading';
+import SummaryRequest from '../components/SummaryRequest';
+import SummaryList from '../components/SummaryList';
 
 const VideoDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +14,7 @@ const VideoDetail: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshSummaries, setRefreshSummaries] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -115,6 +118,25 @@ const VideoDetail: React.FC = () => {
             <dt className="text-gray-500">Status</dt>
             <dd className="text-gray-900 font-medium capitalize">Uploaded</dd>
           </dl>
+        </div>
+      </div>
+
+      {/* Summary Section */}
+      <div className="mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <SummaryRequest 
+              videoId={video.id} 
+              videoDuration={video.duration_seconds}
+              onSummaryCreated={() => setRefreshSummaries(prev => prev + 1)}
+            />
+          </div>
+          <div>
+            <SummaryList 
+              videoId={video.id} 
+              refreshTrigger={refreshSummaries}
+            />
+          </div>
         </div>
       </div>
     </div>

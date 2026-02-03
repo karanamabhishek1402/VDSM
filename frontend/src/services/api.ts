@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { Token, User, UserCreate, Video } from '../types';
+import { Token, User, UserCreate, Video, Summary, TimeRange, Category, SummaryProgressResponse } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_URL = import.meta.env.VITE_API_BASE_URL || `${API_BASE}`;
@@ -114,6 +114,76 @@ export const videoService = {
 
   async downloadVideo(videoId: string): Promise<void> {
     window.open(`${API_BASE}/videos/${videoId}/download`, '_blank');
+  }
+};
+
+export const summaryService = {
+  async createTextPromptSummary(
+    videoId: string, 
+    title: string, 
+    prompt: string
+  ): Promise<Summary> {
+    const response = await api.post<Summary>(`/videos/${videoId}/summaries/text-prompt`, {
+      title,
+      prompt
+    });
+    return response.data;
+  },
+
+  async createCategorySummary(
+    videoId: string,
+    title: string,
+    category: string
+  ): Promise<Summary> {
+    const response = await api.post<Summary>(`/videos/${videoId}/summaries/category`, {
+      title,
+      category
+    });
+    return response.data;
+  },
+
+  async createTimeRangeSummary(
+    videoId: string,
+    title: string,
+    ranges: TimeRange[]
+  ): Promise<Summary> {
+    const response = await api.post<Summary>(`/videos/${videoId}/summaries/time-range`, {
+      title,
+      ranges
+    });
+    return response.data;
+  },
+
+  async getSummaries(videoId: string): Promise<Summary[]> {
+    const response = await api.get<Summary[]>(`/videos/${videoId}/summaries`);
+    return response.data;
+  },
+
+  async getSummaryById(summaryId: string): Promise<Summary> {
+    const response = await api.get<Summary>(`/summaries/${summaryId}`);
+    return response.data;
+  },
+
+  async getSummaryProgress(summaryId: string): Promise<SummaryProgressResponse> {
+    const response = await api.get<SummaryProgressResponse>(`/summaries/${summaryId}/progress`);
+    return response.data;
+  },
+
+  async deleteSummary(summaryId: string): Promise<void> {
+    await api.delete(`/summaries/${summaryId}`);
+  },
+
+  async getDownloadUrl(summaryId: string): Promise<string> {
+    return `${API_BASE}/summaries/${summaryId}/download`;
+  },
+
+  async downloadSummary(summaryId: string): Promise<void> {
+    window.open(`${API_BASE}/summaries/${summaryId}/download`, '_blank');
+  },
+
+  async getCategories(): Promise<{ categories: Category[] }> {
+    const response = await api.get<{ categories: Category[] }>('/categories');
+    return response.data;
   }
 };
 
