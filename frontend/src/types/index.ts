@@ -31,14 +31,35 @@ export interface AuthContextType {
   clearError: () => void;
 }
 
+export interface VideoMetadata {
+  duration_seconds: number;
+  resolution: string;
+  fps: number;
+  video_width: number;
+  video_height: number;
+  format: string;
+}
+
 export interface Video {
   id: string;
+  user_id: string;
   title: string;
-  description?: string;
-  duration?: number;
-  uploaded_at: string;
-  processed: boolean;
-  file_path: string;
+  description: string;
+  file_name: string;
+  file_size: number;
+  format: string;
+  duration_seconds: number;
+  video_width: number;
+  video_height: number;
+  fps: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface VideoUploadProgress {
+  loaded: number;
+  total: number;
+  percent: number;
 }
 
 export interface Summary {
