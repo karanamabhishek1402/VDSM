@@ -4,15 +4,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import VideoDetail from './pages/VideoDetail';
-import { AuthProvider, useAuth } from './context/AuthContext';
-
-const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, isLoading } = useAuth();
-  
-  if (isLoading) return <div>Loading...</div>;
-  
-  return user ? <>{children}</> : <Navigate to="/login" />;
-};
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
@@ -26,17 +19,17 @@ function App() {
             <Route 
               path="/dashboard" 
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <Dashboard />
-                </PrivateRoute>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/videos/:id" 
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <VideoDetail />
-                </PrivateRoute>
+                </ProtectedRoute>
               } 
             />
             <Route path="/" element={<Navigate to="/dashboard" />} />
